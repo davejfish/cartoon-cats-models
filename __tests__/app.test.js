@@ -3,8 +3,6 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 
-const { cats } = require('../data/cats');
-
 describe('cats routes', () => {
   beforeEach(() => {
     return setup(pool);
@@ -12,25 +10,24 @@ describe('cats routes', () => {
 
   it('/cats should return a list of cats', async () => {
     const res = await request(app).get('/cats');
-    const expected = cats.map((cat) => {
-      return { id: cat.id, name: cat.name };
+    
+    expect(res.body.length).toEqual(4);
+    expect(res.body[0]).toEqual({
+      id: expect.any(String),
+      name: expect.any(String),
     });
-    expect(res.body).toEqual(expected);
   });
 
-  it('/cats/:id should return cat detail', async () => {
+  it('/cats/:id should return detail of a cat', async () => {
     const res = await request(app).get('/cats/1');
-    const felix = {
+    
+    expect(res.body).toEqual({
       id: '1',
-      name: 'Felix',
-      type: 'Tuxedo',
-      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Felix_the_cat.svg/200px-Felix_the_cat.svg.png',
-      year: 1892,
-      lives: 3,
-      isSidekick: false,
-    };
-    expect(res.body).toEqual(felix);
+      name: 'doug',
+      type: 'black cat',
+    });
   });
+  
 
   afterAll(() => {
     pool.end();
